@@ -1,0 +1,13 @@
+Hello! Unless I completely misunderstood the point of this exercise, it is VERY hard and it requires a bunch of stuff we have not seen in this course (reading files, for example).
+
+Nevertheless, I will judge this based on what was asked, as I reckon the moderators can intervene and clarify in case everyone gets bad results haha.
+
+Either way, the problem is, as I understand it: code a program that will read the attached file and return the average of the numbers.
+
+Your code doesn't read the file, nor is it ready to be fed it via the command line (eg: opening the terminal and running your program with something like "cat file.txt | .\program").
+So it doesn't really do what was asked.
+
+Now, besides that, I would also like to point out that you are storing the average in a double variable, but the calculation side uses only integers, so the result throws away the part of the number after the point.
+With the kind of calculation you used and this problem itself it won't change the result much, but it is something to keep in mind!
+
+Since your code was well organized and commented I gave full marks on the criteria other than correctness and "all criteria at a high standard".
