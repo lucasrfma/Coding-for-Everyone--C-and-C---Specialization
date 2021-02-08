@@ -1,6 +1,9 @@
 /* 
 Trying to create and test sorting algorithms
 
+Created 2 sorting functions using the general ideas of a bubbleSort and a mergeSort as presented by Professor Ira Pohl in the C for Everyone course @ coursera.
+Also created some auxiliary functions, as well as a printfunction to show the progress of the sorting, which serves to show how much faster merge sorting is
+
 Lucas de Andrade - 27/01/2021
 */
 

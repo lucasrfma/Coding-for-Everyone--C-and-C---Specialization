@@ -10,13 +10,7 @@ Base of this program was made with code examples of the same book.
 
 int main(){
 
-    /* This function counts words, checks the size of the smallest and of the largest words and saves it to the histProp received as an argument
-
-    histProp should be the address of an int array of size 3.
-
-    Subscript 0: word count
-    Subscript 1: size of shortest word 
-    Subscript 2: size of longest word
+    /* This function counts words, checks the size of the smallest and of the largest words and displays it both as a vertical and horizontal histogram
     */
 
     const int IN  = 1; // inside a word
