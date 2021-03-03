@@ -15,6 +15,8 @@
 #include <chrono>
 #include <vector>
 #include <random>
+#include <fstream>
+#include <iterator>
 
 using namespace std;
 
@@ -22,11 +24,32 @@ class Graph{
 
     public:
 
-        Graph(int size = 10, float maxDistance = 1000000):size(size), edges(0), graph(size,vector<float>(size,0.0)), maxDistance(maxDistance){
+        Graph(int size = 10, int maxDistance = 1000000):size(size), edges(0), graph(size,vector<int>(size,0)), maxDistance(maxDistance){
             
             // initializes the generator to be used in RandomizeGraph() method.
             unsigned seed = chrono::system_clock::now().time_since_epoch().count();
             generator.seed(seed);
+        }
+
+        Graph(std::string file_name): maxDistance(1000000),edges(0){
+            /**
+             * Constructor that makes the graph from file.
+             * The file format will be an initial integer that is the node size of the graph
+             * and the further values will be integer triples: (i, j, cost). 
+             */
+            std::ifstream input_file(file_name);
+            std::istream_iterator<int> start(input_file), end; // create iterators
+            std::vector<int> graphData(start,end);             // use iterators to create an int vector with all the file data
+
+            size = graphData[0];    // The first element determines the node size of the graph
+            graph.resize(size,vector<int>(size,0)); // initialize the graph with the size read, all nodes unconnected
+
+            // this loop will go through the ints read, starting from the second (since the first was the node size)
+            // each iteration increases by 3, since each edge is an int triple.
+            for( int i = 1; i < graphData.size(); i += 3){
+                            //i                j                                cost
+                addEdge( graphData[i] , graphData[i+1], static_cast<int>(graphData[i+2]));
+            }
         }
 
         int Vertices(){
@@ -41,7 +64,7 @@ class Graph{
 
         bool Adjacent(int node1, int node2){
             // returns true if there is an edge between the nodes
-            return ( graph[node1][node2] > 0.0 );
+            return ( graph[node1][node2] > 0 );
         }
 
         vector<int> Neighbors(int node){
@@ -57,7 +80,7 @@ class Graph{
             return neighbors;
         }
 
-        void addEdge(int node1, int node2, float distance){
+        void addEdge(int node1, int node2, int distance){
             // adds an edge with the specified weight/distance between the specified nodes
             // only does anything if the edge really did not exist.
             if( !Adjacent(node1,node2) ){
@@ -75,12 +98,12 @@ class Graph{
             }
         }
 
-        float getEdgeValue(int node1, int node2){
+        int getEdgeValue(int node1, int node2){
             // returns the weight/distance of the edge between specified nodes
             return graph[node1][node2];
         }
 
-        void setEdgeValue(int node1, int node2, float value){
+        void setEdgeValue(int node1, int node2, int value){
             // changes the weight/distance of an existing edge
             // to avoid misuse, this method checks if deleteEdge or addEdge aren't the proper methods before actually changing the value.
             if( !Adjacent(node1,node2) ){
@@ -92,7 +115,7 @@ class Graph{
             }
         }
 
-        void randomizeGraph( const float density = 0.2, const float minDistance = 1.0, const float maxDistance = 10.0){
+        void randomizeGraph( const float density = 0.2, const int minDistance = 1, const int maxDistance = 10){
             // This function creates randomized edges on the graph.
             // The user can specify density, as well as the minimum and maximum edge weight/distance
             // If no arguments are specified, the density will be of 20%, minimum distance of 1.0 and maximum of 10.0
@@ -100,9 +123,9 @@ class Graph{
             this->maxDistance = maxDistance;
 
             // to decide if there is or there is not an edge between 2 nodes
-            uniform_real_distribution<double> rollEdgePresence(0.0,1.0);
+            std::uniform_real_distribution<double> rollEdgePresence(0.0,1.0);
             // to decide the size of an edge.
-            uniform_real_distribution<double> rollDistance(minDistance,maxDistance);
+            std::uniform_int_distribution<int> rollDistance(minDistance,maxDistance);
 
             for(int i = 0; i < size; ++i){
                 for(int j = 0; j < size; ++j){
@@ -132,15 +155,29 @@ class Graph{
             for( int i = 0; i < size; ++i){
                 printf("\n%2d |",i);
                 for( int j = 0; j < size; ++j){
-                    printf("  %-4.1f", graph[i][j]);
+                    printf("  %-4d", graph[i][j]);
                 }
             }
         }
 
-        float getMaxDistance(){
+        int getMaxDistance(){
             // returns the maximum weight/distance of an edge.
             // can be usefull when defining the "infinity" used in the algorithm description at the head of this file.
             return maxDistance;
+        }
+
+        void setGraph(const vector<vector<int>>& newGraph){
+            graph.clear();
+            graph = newGraph;
+            size = graph.size();
+            edges = 0;
+            for( int i = 0; i < graph.size(); ++i ){
+                for( int j = 0; j < graph[i].size(); ++j){
+                    if( graph[i][j] > 0 ){
+                        ++edges;
+                    }
+                }
+            }
         }
 
     private:
@@ -148,9 +185,9 @@ class Graph{
         // We need to know the number of nodes to properly size the connectivity matrix, and the unvisited and distance vectors
         int size;
         int edges;
-        vector<vector<float>> graph;
+        vector<vector<int>> graph;
 
-        float maxDistance;
+        int maxDistance;
         // the random number engine is defined as an attribute of the graph to avoid it "resetting" if using the randomize method repeatedly.
         default_random_engine generator;
 

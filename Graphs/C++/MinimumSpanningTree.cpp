@@ -1,6 +1,18 @@
 /*
 
-Minimum Spanning Tree following the Prim Algorithm
+Minimum Spanning Tree following the Prim Algorithm.
+
+Made for the Homework 3: Compute the minimum spanning tree for an inputted graph
+    of the course C++ for C Programmers, Part A,  UCSC - Coursera
+
+Compile this file with the PriorityQueue.cpp and Graph.cpp in the same folder
+Also needs an input file, such as the one described in the assignment page
+
+For default it tries to read "mst_data.txt", but it is able to read a file name from the command line
+So either make sure you have a mst_data.txt on the folder, or call the program with a valid file name argument.
+( for example: 
+.\MinimumSpanningTree.exe .\argvTest.txt
+on powershell )
 
 Lucas Romero da F. M. de Andrade
 feb. 24 2021
@@ -13,18 +25,20 @@ feb. 24 2021
 #include <vector>
 #include <string>
 #include <iomanip>
+#include <fstream>
+#include <iterator>
 
 class MinimumSpanningTree{
 
     private:
 
-        const float notConnected = 2000000.0;
+        const int notConnected = 2000000;
         const int rootConnection = -1;
-        const float rootDistance = -1.0;
+        const int rootDistance = -1;
 
         struct Edge{
             int connectedTo;
-            float distance;
+            int distance;
         };
 
         struct Node{
@@ -59,7 +73,7 @@ class MinimumSpanningTree{
             seen.clear();
         }
 
-        void setPreviousEdge(int node, int previousNode, float distance){
+        void setPreviousEdge(int node, int previousNode, int distance){
             tree[node].previous.connectedTo = previousNode;
             tree[node].previous.distance = distance;
         }
@@ -105,7 +119,7 @@ class MinimumSpanningTree{
             seen.addItem(start,0.0);
 
             int visiting;
-            float distance;
+            int distance;
             vector<int> neighbors;
 
             // 2
@@ -218,9 +232,9 @@ class MinimumSpanningTree{
              */
             
             for(int i = 0; i < tree.size(); ++i){
-                std::cout << "Node: " << i << " Branches: ";
+                std::cout << "Node: " << std::setw(2) << i << " Branches: ";
                 for(int j = 0; j < tree[i].branches.size() ; ++j){
-                    std::cout << tree[i].branches[j].connectedTo << ", ";
+                    std::cout << tree[i].branches[j].connectedTo << " (" << tree[i].branches[j].distance << "), ";
                 }
                 std::cout << std::endl;
             }
@@ -242,7 +256,7 @@ class MinimumSpanningTree{
             }
             spacing = spacing + "     |";
 
-            std::cout << "root" << setw(2) << node;
+            std::cout << "root" << std::setw(2) << node;
             for( int i = 0; i < tree[node].branches.size() ; ++i){
                 if( i > 0 ){
                     std::cout << std::endl << spacing;
@@ -251,35 +265,46 @@ class MinimumSpanningTree{
             }
         }
 
+        int getCost(){
+            /**
+             * Returns the cost of the MST
+             */
+            int cost = 0;
+
+            for( auto node : tree ){
+                if( node.previous.distance >= 0 ){
+                    cost += node.previous.distance;
+                }
+            }
+
+            return cost;
+        }
+
 };
 
-int main(){
+int main(int argc, char *argv[]){
     
-    const int nodes = 20;
-
     int startNode = 0;
 
-    Graph graph(nodes);
-    // to test with random graph
-    graph.randomizeGraph(0.5);
+    std::string file_name;
+    if( argc > 1 ){
+        file_name = argv[1];
+    }else{
+        file_name = "mst_data.txt";
+    }
 
-    // to test with the graph from video 4.4 Kruskal simulate 
-    // (because I liked the graphical representation of the graph in that video)
-    // vector<vector<float>> newGraph = {  {0.0, 7.0, 0.0, 5.0, 0.0, 0.0, 0.0},
-    //                                     {7.0, 0.0, 8.0, 9.0, 7.0, 0.0, 0.0},
-    //                                     {0.0, 8.0, 0.0, 0.0, 5.0, 0.0, 0.0},
-    //                                     {5.0, 9.0, 0.0, 0.0, 15.0,6.0, 0.0},
-    //                                     {0.0, 7.0, 5.0,15.0, 0.0, 8.0, 9.0},
-    //                                     {0.0, 0.0, 0.0, 6.0, 8.0, 0.0,11.0},
-    //                                     {0.0, 0.0, 0.0, 0.0, 9.0,11.0, 0.0}};
-    // graph.setGraph(newGraph);
+    Graph graph(file_name);
 
-    graph.printGraph();
+    // graph.printGraph();
     MinimumSpanningTree tree(graph);
+
+    printf("\n\nCost of the Minimum Spanning Tree: %d",tree.getCost());
 
     printf("\n\nMinimum Spanning Tree drawn:\n\n");
     tree.printTree();
-    printf("\n\nMinimum Spanning Tree as a list of nodes:\n\n");
+    printf("\n\nMinimum Spanning Tree as a list of nodes and their branches:\n\n");
     tree.printTreeList();
+
+    std::cout << std::endl;
 
 }
