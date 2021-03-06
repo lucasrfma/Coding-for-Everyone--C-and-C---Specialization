@@ -23,11 +23,11 @@ int main(){
     const int sampleSize = 1000;
 
     int startNode = 0;
-    float average;
+    double average;
     int count;
     // create a graph of 50 nodes
-    Graph graph(nodes);
-    ShortestPath navigator(graph);
+    Graph<double> graph(nodes);
+    ShortestPath<double> navigator(graph);
 
     // Calculate average of shortest paths for 50 random graphs, starting from every node to every other node.
     average = 0.0;

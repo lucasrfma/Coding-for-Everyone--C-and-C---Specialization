@@ -18,8 +18,9 @@ Made for the week 3 Assignment for the course "C++ for C Programmers, Part A", U
 
 using namespace std;
 
-void printInfoFrom(ShortestPath& navigator, int startNode){
-    float average = 0.0;
+template<typename T>
+void printInfoFrom(ShortestPath<T>& navigator, int startNode){
+    double average = 0.0;
     int count = 0;
     printf("\n-----------------------------------------------"
             "\nAll paths starting from node %d:\n",startNode);
@@ -35,7 +36,7 @@ int main(){
     int startNode = 0, count;
     float average;
     // create a graph of size 50
-    Graph graph(50);
+    Graph<int> graph(20);
 
     // call randomize using default values: 
     // density = 0.2
@@ -43,7 +44,7 @@ int main(){
     // maxDistance = 10.0
     graph.randomizeGraph();
 
-    ShortestPath navigator(graph);
+    ShortestPath<int> navigator(graph);
 
     printf("\n\nGraph (20%% density):\n");
 
@@ -53,7 +54,7 @@ int main(){
 
     printf("\nConnectivity matrix: \n(1 = column node is reachable from row node)\n");
 
-    navigator.printVisited();
+    // navigator.printVisited();
 
     if( navigator.isConnected()){
         cout << "\n\nAll nodes are reachable!";
@@ -61,35 +62,6 @@ int main(){
         cout << "\n\nThere are unreachable nodes.";
     }
     
-    printInfoFrom(navigator,startNode);
-    
-    // Now considering a different initial node:
-    startNode = 4;
-    printInfoFrom(navigator,startNode);
-
-    // Now we re-randomize the graph with a different density!
-    graph.randomizeGraph(0.4);
-
-    printf("\n\nGraph (40%% density):\n");
-
-    graph.printGraph();
-
-    navigator.setAllPaths();
-
-    printf("\nConnectivity matrix: \n(1 = column node is reachable from row node)\n");
-
-    navigator.printVisited();
-
-    if( navigator.isConnected()){
-        cout << "\n\nAll nodes are reachable!";
-    }else{
-        cout << "\n\nThere are unreachable nodes.";
-    }
-
-    startNode = 0;
-    printInfoFrom(navigator,startNode);
-    
-    startNode = 4;
     printInfoFrom(navigator,startNode);
 
     return 0;

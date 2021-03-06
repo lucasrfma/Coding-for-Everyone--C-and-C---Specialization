@@ -7,6 +7,10 @@
     Lucas Romero da F M de Andrade
     Start: feb. 17 2021
     End: feb. 20 2021
+
+    
+    mar. 6 2021:
+        Changed to be a template. It should work properly with either integer or floating point types.
 */
 
 #include<iostream>
@@ -14,11 +18,12 @@
 
 using namespace std;
 
+template<typename T>
 class PriorityQueue{
 
     public:
 
-        PriorityQueue(int size = 0):queue(size){}
+        PriorityQueue(){}
         
         typedef struct item{
             /*  This data strucure has 2 attributes: identifier and value
@@ -28,10 +33,10 @@ class PriorityQueue{
                 The name is important as it is what makes it possible to recognize the nodes of the related class Graph.
             */
             int identifier;
-            float value;
+            T value;
         }item;
 
-        void addItem(int identifier, float value){
+        void addItem(int identifier, T value){
             // adds an item to the queue.
             item nItem;
             nItem.identifier = identifier;
@@ -39,17 +44,29 @@ class PriorityQueue{
             this->queue.push_back(nItem);
         }
 
-        void popItem(int& identifier, float& value){
-            // receives two variables as Pass by Reference.
-            // saves the values of the last item in the queue into these variables
-            // removes the last item in the queue
+        void popItem(int& identifier, T& value){
+            /**
+             * receives two variables as Pass by Reference.
+             * saves the values of the last item in the queue into these variables
+             * removes the last item in the queue
+             */
             identifier = queue[queue.size()-1].identifier;
             value = queue[queue.size()-1].value;
             queue.pop_back();
         }
+        void popItem(int& identifier){
+            /**
+             * saves the identifier of the last item in the queue into the variable received as an argument
+             * removes the last item in the queue
+             */
+            identifier = queue[queue.size()-1].identifier;
+            queue.pop_back();
+        }
 
-        void addItemSorted(int identifier, float value){
-            // adds an item to the queue, and sorts the queue.
+        void addItemSorted(int identifier, T value){
+            /**
+             * adds an item to the queue, and sorts the queue.
+             */
             item nItem;
             nItem.identifier = identifier;
             nItem.value = value;
@@ -59,7 +76,9 @@ class PriorityQueue{
         }
 
         int getSize(){
-            // returns the size of the queue
+            /**
+             * returns the size of the queue
+             */
             return queue.size();
         }
 
@@ -69,8 +88,10 @@ class PriorityQueue{
         }
 
         void printQueue(){
-            // prints the current queue. Remember, this queue is made so the Last Item is always the one to be removed.
-            // It should, normally, be sorted before being popped so the last element is the smallest one
+            /**
+             * prints the current queue. Remember, this queue is made so the Last Item is always the one to be removed.
+             * It should, normally, be sorted before being popped so the last element is the smallest one
+             */
             cout << "\n";
             for( int i = 0; i < queue.size() ; ++i){
                 cout << queue[i].identifier << ": " << queue[i].value << "   ";

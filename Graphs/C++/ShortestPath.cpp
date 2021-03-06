@@ -10,13 +10,18 @@
   Lucas Romero da F M de Andrade
   Start: feb. 17 2021
   End: feb. 20 2021
+
+  mar. 6 2021:
+    Changed to be a template. It should work properly with either integer or floating point types.
 */
 
 #include "Graph.cpp"
 #include "PriorityQueue.cpp"
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
+template<typename T>
 class ShortestPath{
 
      public:
@@ -25,13 +30,13 @@ class ShortestPath{
                // path type: it has a vector that is used to describe a path, and an attribute that is the sum of the weights 
                // of every edge in that path.
                vector<int> path;
-               float distance;
+               T distance;
           }path;
 
-          ShortestPath(Graph& graph):
+          ShortestPath(Graph<T>& graph):
           graph(graph),
           map(graph.Vertices()),
-          visited(graph.Vertices(),vector<short>(graph.Vertices(),0))
+          visited(graph.Vertices(),vector<bool>(graph.Vertices(),0))
           {}
           
           void setAllPaths(){
@@ -56,7 +61,7 @@ class ShortestPath{
                for( int i = 0; i < graph.Vertices(); ++i){
                     map[startNode][i].distance = 0;
                     map[startNode][i].path.clear();
-                    visited[startNode][i] = 0;
+                    visited[startNode][i] = false;
                     
                }
                
@@ -101,13 +106,15 @@ class ShortestPath{
                for( int i = 0; i < visited.size(); ++i){
                     printf("\n%2d |",i);
                     for( int j = 0; j < visited.size(); ++j){
-                         printf("  %-3.1d", visited[i][j]);
+                         std::cout << "  " << std::setw(3) << visited[i][j];
+                         // printf("  %-3.1d", visited[i][j]);
                     }
                }
           }
 
           void printPath(int startNode, int endNode){
-               printf(" Distance: %4.1f : Path: ",map[startNode][endNode].distance);
+               std::cout << " Distance: " << std::setw(4) << map[startNode][endNode].distance << " : Path: ";
+               // printf(" Distance: %4.1f : Path: ",map[startNode][endNode].distance);
                for( int i = 0; i < map[startNode][endNode].path.size(); ++i ){
                     if( i == 0 ){
                          cout << map[startNode][endNode].path[i];
@@ -131,12 +138,10 @@ class ShortestPath{
           bool isConnected(){
 
                /* This method checks if the graph is connected.
-                    It needs setPaths() to have been run at least once to work, so
-                    if it hasn't been, this method itself will run getPaths(0) and
-                    use recursion to return the appropriate bool value.
+                  It needs setPaths() to have been run at least once to work.
                */
 
-               int sum;
+               bool connected;
 
                /* How it works:
                     Checks every row of visited and gets the sum of the columns. There can be 3 results with each iteration:
@@ -147,42 +152,40 @@ class ShortestPath{
                     If the outer loop ends without reaching b or c, it will print an error message and return false*/
 
                for( int i = 0; i < visited.size(); ++i){
-                    sum = 0;
+                    connected = true;
                     for( int j = 0; j < visited[i].size(); ++j){
-                         sum += visited[i][j];
+                         if( j != i ){
+                              connected = connected && visited[i][j];
+                         }
                     }
-                    if(sum == visited.size()){
+                    if(connected){
                          return true;
-                    } else if ( sum > 0 ){
-                         return false;
                     }
                }
-               // cout << "\nCan't determine if it's connected. Run setPaths() at least once and try again." << endl;
-               setPaths(0);
-               return isConnected();
+               return false;
           }
 
-          float averagePathLength(int startNode){
+          double averagePathLength(int startNode){
                /* Returns the average path length of the paths to all nodes reachable from startNode*/
-               float average = 0.0;
+               double average = 0.0;
                int count = 0;
                for( int i = 0; i < map[startNode].size(); ++i){
-                    if( i != startNode && visited[startNode][i] == 1 ){
+                    if( i != startNode && visited[startNode][i] ){
                          ++count;
-                         average +=  (map[startNode][i].distance - average)/count;
+                         average +=  (static_cast<double>(map[startNode][i].distance) - average)/count;
                     }
                }
                
                return average;
           }
 
-          void averagePathLength(int startNode, float& average, int& count){
+          void averagePathLength(int startNode, double& average, int& count){
                /*   Calculates the average path length of the paths to all nodes reachable from startNode
                     This version uses average and count variables passed by reference.
-                    This can be usefull if the user wants to know how many nodes are reachable from startNode
+                    This can be useful if the user wants to know how many nodes are reachable from startNode
                     Or if calculating an average of path lengths from multiple startNodes, or even different graphs*/
                for( int i = 0; i < map[startNode].size(); ++i){
-                    if( i != startNode && visited[startNode][i] == 1 ){
+                    if( i != startNode && visited[startNode][i] ){
                          ++count;
                          average +=  (map[startNode][i].distance - average)/count;
                     }
@@ -191,20 +194,19 @@ class ShortestPath{
 
      private:
 
-          Graph& graph;
+          Graph<T>& graph;
           // visited is a matrix that represents all nodes that have been visited
-          // eg: visited[0][1] == 0 means node 1 has not been visited starting from node 0 yet:
-          //   If setPaths(0) has been run, and visited[0][1] is still 0, it means 1 is not reachable from 0
+          // eg: visited[0][1] == true means node 1 has not been visited starting from node 0 yet:
+          //   If setPaths(0) has been run, and visited[0][1] is still false, it means 1 is not reachable from 0
           //   If setPaths(0) has NOT been run, it is unknown whether it is reachable or not.
-          // eg: visited[0][1] == 1 means node 1 has been visited, starting from node 0.
-          vector<vector<short>> visited;
-          // unvisited has all nodes already seen but not yet visited, as well as their best-so-far distance from the starting node
-          PriorityQueue seen; 
+          vector<vector<bool>> visited;
+          // This priority queue has all nodes already seen but not yet visited, as well as their best-so-far distance from the starting node
+          PriorityQueue<T> seen;
 
           // this 2d matrix represents the shortest path from each node to each other node.
           vector<vector<path>> map;
 
-          void addPath(int startNode, int visitingNode, int neighbor, float newPathDistance){
+          void addPath(int startNode, int visitingNode, int neighbor, T newPathDistance){
                /* this private method sets the path from startNode to neighbor node, going through visiting node*/
 
                // we clear the previous path
@@ -223,8 +225,8 @@ class ShortestPath{
           void calculatePaths(int startNode){
 
                int visitingNode;
-               float visitingValue;
-               float newPathDistance;
+               T visitingValue;
+               T newPathDistance;
                vector<int> neighbors;
 
                // adds the startNode to it's own path.
@@ -253,7 +255,7 @@ class ShortestPath{
                     for( int i = 0; i < neighbors.size(); ++i){
                          
                          // Only does anything to nodes not yet marked as visited
-                         if( visited[startNode][neighbors[i]] == 0){
+                         if( !visited[startNode][neighbors[i]]){
                               // Calculates the distance from startNode to the neighbors coming though visitingNode
                               newPathDistance = map[startNode][visitingNode].distance + graph.getEdgeValue(visitingNode,neighbors[i]);
 
@@ -269,7 +271,7 @@ class ShortestPath{
                          }
                     }
                     // marks the visitingNode as visited
-                    visited[startNode][visitingNode] = 1;
+                    visited[startNode][visitingNode] = true;
                }
 
           }

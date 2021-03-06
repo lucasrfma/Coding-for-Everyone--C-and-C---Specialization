@@ -1,5 +1,4 @@
 /*
-
 Minimum Spanning Tree following the Prim Algorithm.
 
 Made for the Homework 3: Compute the minimum spanning tree for an inputted graph
@@ -17,6 +16,9 @@ on powershell )
 Lucas Romero da F. M. de Andrade
 feb. 24 2021
 
+mar. 6 2021:
+    Changed to be a template. It should work properly with either integer or floating point types.
+
 */
 
 #include "Graph.cpp"
@@ -28,6 +30,7 @@ feb. 24 2021
 #include <fstream>
 #include <iterator>
 
+template <typename T>
 class MinimumSpanningTree{
 
     private:
@@ -48,10 +51,10 @@ class MinimumSpanningTree{
 
         vector<Node> tree;
         vector<bool> visited;   // a vector that represents visited nodes. Visited nodes are not to be revisited
-        PriorityQueue seen;     // PriorityQueue saves and sorts all seen nodes. 
+        PriorityQueue<T> seen;     // PriorityQueue saves and sorts all seen nodes. 
                                 // When a node is visited, it's edges are added to the seen queue.
 
-        Graph& graph;          
+        Graph<T>& graph;          
         int size;
         int start;
 
@@ -189,7 +192,7 @@ class MinimumSpanningTree{
 
     public:
 
-        MinimumSpanningTree(Graph& graph, int start = 0):
+        MinimumSpanningTree(Graph<T>& graph, int start = 0):
             graph(graph),
             start(start),
             seen(){
@@ -199,7 +202,7 @@ class MinimumSpanningTree{
             }
 
 
-        void setGraph(Graph& graph){
+        void setGraph(Graph<T>& graph){
             /*
             In case there is a need to change the graph to be worked on
             */
@@ -293,10 +296,10 @@ int main(int argc, char *argv[]){
         file_name = "mst_data.txt";
     }
 
-    Graph graph(file_name);
+    Graph<double> graph(file_name);
 
     // graph.printGraph();
-    MinimumSpanningTree tree(graph);
+    MinimumSpanningTree<double> tree(graph);
 
     printf("\n\nCost of the Minimum Spanning Tree: %d",tree.getCost());
 
