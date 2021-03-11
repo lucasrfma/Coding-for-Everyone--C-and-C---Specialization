@@ -135,6 +135,7 @@ class Graph{
              * only does anything if the edge really did not exist.
              */
             if( !Adjacent(node1,node2) ){
+                // (test) std::cout << "\nNew edge between node " << node1 << " and node 2 " << node2 << " Distance: " << distance << std::endl; 
                 graph[node1][node2] = graph[node2][node1] = distance;
                 ++edges;
             }
