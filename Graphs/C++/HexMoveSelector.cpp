@@ -23,6 +23,8 @@
 #include <vector>
 #include "HexBoard.cpp"
 
+using std::vector;
+
 class HexMoveSelector
 {
 private:
@@ -32,10 +34,20 @@ private:
 
 public:
     int checkForWinningMove();
-
+    void addBluePath(vector<int> &&);
+    void pathExtension(vector<int> &);
 };
 
 int HexMoveSelector::checkForWinningMove()
 {
     
+}
+void HexMoveSelector::addBluePath(vector<int> &&path)
+{
+    bluePaths.push_back(move(path));
+}
+
+void pathExtension(vector<int> &)
+{
+
 }
