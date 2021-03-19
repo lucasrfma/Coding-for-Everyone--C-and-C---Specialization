@@ -8,8 +8,8 @@
 #include <string>
 #include <algorithm>
 
-template<typename T>
-class Graph<T>;
+// template<typename T>
+// class Graph<T>;
 
 class HexPaths;
 
@@ -18,7 +18,7 @@ class HexBoard
 private:
     int size;
     int numberOfNodes;
-    Graph<int>  *board;
+    Graph<int>  board;
     std::vector<char> boardStatus;
     std::vector<int> top;
     std::vector<int> right;

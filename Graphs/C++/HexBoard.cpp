@@ -15,8 +15,8 @@
  * 
  * For testing purposes I'm sending this file together with the necessary Graph class and 2 test files
  *      How to use the test files:
- *      in windows 10: call the program with "cat test.txt | HexBoard->exe"
- *      Same should work on linux I think, probably just "HexBoard->exe << test.txt" works as well if I'm not mistaken
+ *      in windows 10: call the program with "cat test.txt | HexBoard.exe"
+ *      Same should work on linux I think, probably just "HexBoard.exe << test.txt" works as well if I'm not mistaken
  * You can also test by playing a game with yourself I guess
  * You can change the size of the board by changing the size on main() function.
  * 
@@ -29,7 +29,6 @@
  * mar. 11 2021
  * 
  */
-
 #include "Graph.h"
 #include "HexBoard.h"
 #include <iostream>
@@ -40,14 +39,13 @@
 using std::vector;
 using std::string;
 
-HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), boardStatus(size*size,'.')
+HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
     /**
-     * Constructor that initializes a HexBoard->
+     * Constructor that initializes a HexBoard.
      * int size argument is the size of a board edge.
      * So the total number of elements will be size squared.
      */
-    board = new Graph<int>(size*size);
     paths = new HexPaths(size);
     // (test) std::cout << "\nSize is: " << size << std::endl;
     for( int i = 0; i < numberOfNodes; ++i){
@@ -68,8 +66,8 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
             left.push_back(i);
         }
     }
-    // (test) std::cout << "Vertices: " << board->Vertices() << std::endl;
-    // (test) board->printGraph();
+    // (test) std::cout << "Vertices: " << board.Vertices() << std::endl;
+    // (test) board.printGraph();
 
     // add the edges:
     int nodeType;
@@ -79,55 +77,55 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
         {
         case 0: // Inner position
             
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-size+1,1);
-            board->addEdge(i,i-1,1);
-            board->addEdge(i,i+1,1);
-            board->addEdge(i,i+size-1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-size+1,1);
+            board.addEdge(i,i-1,1);
+            board.addEdge(i,i+1,1);
+            board.addEdge(i,i+size-1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 2: // Top Edge
-            board->addEdge(i,i-1,1);
-            board->addEdge(i,i+1,1);
-            board->addEdge(i,i+size-1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i-1,1);
+            board.addEdge(i,i+1,1);
+            board.addEdge(i,i+size-1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 4: // Right Edge
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-1,1);
-            board->addEdge(i,i+size-1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-1,1);
+            board.addEdge(i,i+size-1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 6: // Top-Right Corner
-            board->addEdge(i,i-1,1);
-            board->addEdge(i,i+size-1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i-1,1);
+            board.addEdge(i,i+size-1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 8: // Bottom Edge
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-size+1,1);
-            board->addEdge(i,i-1,1);
-            board->addEdge(i,i+1,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-size+1,1);
+            board.addEdge(i,i-1,1);
+            board.addEdge(i,i+1,1);
             break;
         case 12: // Bottom-Right Cornerstd::cout << "test!!" << result;
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-1,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-1,1);
             break;
         case 16: // Left Edge
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-size+1,1);
-            board->addEdge(i,i+1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-size+1,1);
+            board.addEdge(i,i+1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 18: // Top-Left Corner
             // (test) std::cout << "Node " << i << " Type: " << nodeType;
-            board->addEdge(i,i+1,1);
-            board->addEdge(i,i+size,1);
+            board.addEdge(i,i+1,1);
+            board.addEdge(i,i+size,1);
             break;
         case 24: // Bottom-Left Corner
-            board->addEdge(i,i-size,1);
-            board->addEdge(i,i-size+1,1);
-            board->addEdge(i,i+1,1);
+            board.addEdge(i,i-size,1);
+            board.addEdge(i,i-size+1,1);
+            board.addEdge(i,i+1,1);
             break;
         default:
             std::cout << "\nError checking element position." << std::endl;
@@ -174,7 +172,7 @@ int HexBoard::isBoardEdge(int position)
 void HexBoard::printBoard()
 {
     /**
-     * Prints the current board->
+     * Prints the current board.
      *  For example, a 5x5 board, with 3 plays by Blue and by Red:
      * 
      *     . - . - B - . - .
@@ -457,7 +455,7 @@ vector<int> HexBoard::valueConnections(int start, char value)
                 // add to path
                 connections.push_back(current);
                 // add it's neighbors to toSee
-                neighbors = board->Neighbors(current);
+                neighbors = board.Neighbors(current);
                 toVisit.insert(toVisit.end(),neighbors.begin(),neighbors.end());
             }
         }

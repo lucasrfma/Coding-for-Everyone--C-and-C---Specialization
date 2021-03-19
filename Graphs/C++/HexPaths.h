@@ -1,4 +1,3 @@
-// #pragma once
 #ifndef _HEX_PATHS
 #define _HEX_PATHS
 /**
@@ -7,8 +6,6 @@
  * It will merge paths when needed
  * The paths will be provided by the board itself
  */
-
-#include "HexBoard.h"
 // #include <iostream>
 #include <list>
 #include <vector>
