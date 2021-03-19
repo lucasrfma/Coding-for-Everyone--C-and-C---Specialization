@@ -31,7 +31,8 @@
 #include <iterator>
 #include <type_traits>
 
-using namespace std;
+using std::vector;
+using std::cout;
 
 template<typename T>
 Graph<T>::Graph():size(10), edges(0), graph(10,vector<T>(10,static_cast<T>(0))){

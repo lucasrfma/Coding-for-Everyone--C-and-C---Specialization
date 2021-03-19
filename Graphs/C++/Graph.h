@@ -99,4 +99,6 @@ private:
 
 };
 
+#include "Graph.tpp"
+
 #endif
