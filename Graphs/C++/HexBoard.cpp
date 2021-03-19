@@ -31,6 +31,7 @@
  */
 
 #include "Graph.cpp"
+#include "HexPaths.cpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -50,6 +51,7 @@ private:
     vector<int> right;
     vector<int> bottom;
     vector<int> left;
+    HexPaths paths;
     bool blueHumanPlayer;
     bool redHumanPlayer;
     bool blueTurn;
@@ -68,13 +70,15 @@ public:
     void printBoard();
     char getPositionStatus(int position);
     int coordinateToOrdinal(int x, int y);
+    static int coordinateToOrdinal(int x, int y, int size);
     int ordinalToCoordinate(int position, int& x, int& y);
+    static int ordinalToCoordinate(int position, int& x, int& y,int size);
     bool queryMove();
     inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
     inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
 };
 
-HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
+HexBoard::HexBoard(int size): size(size),paths(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
     /**
      * Constructor that initializes a HexBoard.
@@ -301,6 +305,23 @@ int HexBoard::coordinateToOrdinal(int x, int y)
     return position;
 }
 
+int HexBoard::coordinateToOrdinal(int x, int y, int size)
+{
+    /**
+     * Static version to enable other classes to use it even without direct access to a HexBoard Object.
+     * Returns the ordinal value (from 0 to numberOfNodes-1) corresponding to
+     * the coordinates passed. eg: (0,0) = 0, (n-1,n-1) = (n^2)-1
+     * Returns -1 in case the resulting position is out of bounds.
+     */
+    int position = x*size + y;
+    int numberOfNodes = size*size;
+
+    if( position < 0 || position >= numberOfNodes ){
+        return -1;
+    }
+    return position;
+}
+
 int HexBoard::ordinalToCoordinate(int position, int& x, int& y)
 {
     /**
@@ -309,6 +330,24 @@ int HexBoard::ordinalToCoordinate(int position, int& x, int& y)
      * if out of bounds, returns -1 without assigning values.
      * If valid, (x,y) are assigned to the variables passes as arguments and returns 0
      */
+    if( position < 0 || position >= numberOfNodes ){
+        return -1;
+    }
+    x = position / size;
+    y = position % size;
+    return 0;
+}
+
+int HexBoard::ordinalToCoordinate(int position, int& x, int& y, int size)
+{
+    /**
+     * Static version to enable other classes to use it even without direct access to a HexBoard Object.
+     * Converts a position to it's equivalent coordinates (x,y).
+     * Checks if position is valid or out of bounds.
+     * if out of bounds, returns -1 without assigning values.
+     * If valid, (x,y) are assigned to the variables passes as arguments and returns 0
+     */
+    int numberOfNodes = size*size;
     if( position < 0 || position >= numberOfNodes ){
         return -1;
     }
@@ -527,16 +566,16 @@ void HexBoard::moveAI()
 
 }
 
-int main(int argc, char const *argv[])
-{
-    const int size = 11;
-    HexBoard board(size);
-    bool gameEnded = false;
+// int main(int argc, char const *argv[])
+// {
+//     const int size = 11;
+//     HexBoard board(size);
+//     bool gameEnded = false;
 
-    while(!gameEnded){
-        board.printBoard();
-        gameEnded = board.queryMove();
-    }
+//     while(!gameEnded){
+//         board.printBoard();
+//         gameEnded = board.queryMove();
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
