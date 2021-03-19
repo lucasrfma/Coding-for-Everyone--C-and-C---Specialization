@@ -1,5 +1,6 @@
-#pragma once
-
+// #pragma once
+#ifndef _HEX_PATHS
+#define _HEX_PATHS
 /**
  * This is a simple class that will manage paths created on a HexBoard
  * It will keep track of existing paths.
@@ -16,11 +17,10 @@ class HexPaths
 {
 private:
     int size;
-    // int numberOfNodes;
     std::list<std::vector<int>> paths;
 public:
-    HexPaths(){}
+    HexPaths();
     HexPaths(int size):size(size){}
-    void setSize(int size){size = size;}
-
 };
+
+#endif

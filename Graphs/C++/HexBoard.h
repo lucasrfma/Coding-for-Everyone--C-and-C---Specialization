@@ -1,4 +1,6 @@
-#pragma once
+// #pragma once
+#ifndef _HEX_BOARD
+#define _HEX_BOARD
 #include "Graph.h"
 #include "HexPaths.h"
 #include <iostream>
@@ -6,18 +8,23 @@
 #include <string>
 #include <algorithm>
 
+template<typename T>
+class Graph<T>;
+
+class HexPaths;
+
 class HexBoard
 {
 private:
     int size;
     int numberOfNodes;
-    Graph<int>  board;
+    Graph<int>  *board;
     std::vector<char> boardStatus;
     std::vector<int> top;
     std::vector<int> right;
     std::vector<int> bottom;
     std::vector<int> left;
-    HexPaths paths;
+    HexPaths *paths;
     bool blueHumanPlayer;
     bool redHumanPlayer;
     bool blueTurn;
@@ -43,3 +50,5 @@ public:
     inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
     inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
 };
+
+#endif
