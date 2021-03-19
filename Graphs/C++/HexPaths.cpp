@@ -5,10 +5,26 @@
  * The paths will be provided by the board itself
  */
 
-#include "HexBoard.cpp"
-// #include <iostream>
-#include <list>
-#include <vector>
+
+#include "HexPaths.h"
+// #include "HexBoard.h"
+// // #include <iostream>
+// #include <list>
+// #include <vector>
+
+
+// class HexPaths
+// {
+// private:
+//     int size;
+//     // int numberOfNodes;
+//     list<vector<int>> paths;
+// public:
+//     HexPaths(){}
+//     HexPaths(int size):size(size){}
+//     void setSize(int size){size = size;}
+
+// };
 
 using std::vector;
 using std::list;
@@ -16,18 +32,6 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-class HexPaths
-{
-private:
-    int size;
-    // int numberOfNodes;
-    list<vector<int>> paths;
-public:
-    HexPaths(){}
-    HexPaths(int size):size(size){}
-    void setSize(int size){size = size;}
-
-};
 
 int main(int argc, char const *argv[])
 {

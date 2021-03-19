@@ -30,53 +30,10 @@
  * 
  */
 
-#include "Graph.cpp"
-#include "HexPaths.cpp"
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
+#include "HexBoard.h"
 
 using std::vector;
 using std::string;
-
-class HexBoard
-{
-private:
-    int size;
-    int numberOfNodes;
-    Graph<int>  board;
-    vector<char> boardStatus;
-    vector<int> top;
-    vector<int> right;
-    vector<int> bottom;
-    vector<int> left;
-    HexPaths paths;
-    bool blueHumanPlayer;
-    bool redHumanPlayer;
-    bool blueTurn;
-
-    int isBoardEdge(int position);
-    void printMove(int position, char value);
-    int setPositionStatus(int position, char status);
-    int makeMove(int position, char value);
-    vector<int> valueConnections(int start, char value);
-    bool isBlueVictory(int start);
-    bool isRedVictory(int start);
-    void moveAI();
-    
-public:
-    HexBoard(int size);
-    void printBoard();
-    char getPositionStatus(int position);
-    int coordinateToOrdinal(int x, int y);
-    static int coordinateToOrdinal(int x, int y, int size);
-    int ordinalToCoordinate(int position, int& x, int& y);
-    static int ordinalToCoordinate(int position, int& x, int& y,int size);
-    bool queryMove();
-    inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
-    inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
-};
 
 HexBoard::HexBoard(int size): size(size),paths(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
@@ -565,17 +522,3 @@ void HexBoard::moveAI()
 {
 
 }
-
-// int main(int argc, char const *argv[])
-// {
-//     const int size = 11;
-//     HexBoard board(size);
-//     bool gameEnded = false;
-
-//     while(!gameEnded){
-//         board.printBoard();
-//         gameEnded = board.queryMove();
-//     }
-
-//     return 0;
-// }
