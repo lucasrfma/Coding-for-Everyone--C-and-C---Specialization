@@ -46,7 +46,7 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
      * int size argument is the size of a board edge.
      * So the total number of elements will be size squared.
      */
-    paths = new HexPaths(size);
+    // paths = new HexPaths(size);
     // (test) std::cout << "\nSize is: " << size << std::endl;
     for( int i = 0; i < numberOfNodes; ++i){
         // Populate top vector.

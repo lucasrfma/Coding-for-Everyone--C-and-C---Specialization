@@ -2,7 +2,7 @@
 #ifndef _HEX_BOARD
 #define _HEX_BOARD
 #include "Graph.h"
-#include "HexPaths.h"
+// #include "HexPaths.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -24,7 +24,7 @@ private:
     std::vector<int> right;
     std::vector<int> bottom;
     std::vector<int> left;
-    HexPaths *paths;
+    // HexPaths *paths;
     bool blueHumanPlayer;
     bool redHumanPlayer;
     bool blueTurn;
