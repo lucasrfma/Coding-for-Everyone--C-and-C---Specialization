@@ -1,14 +1,11 @@
 // #pragma once
 #ifndef _HEX_BOARD
 #define _HEX_BOARD
-#include "Graph.h"
+#include "SimpleGraph.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
-
-// template<typename T>
-// class Graph<T>;
 
 class HexPaths;
 
@@ -17,7 +14,7 @@ class HexBoard
 private:
     int size;
     int numberOfNodes;
-    Graph<int>  board;
+    SimpleGraph  board;
     std::vector<char> boardStatus;
     std::vector<int> top;
     std::vector<int> right;

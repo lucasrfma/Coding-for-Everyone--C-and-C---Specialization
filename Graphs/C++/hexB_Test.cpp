@@ -1,7 +1,6 @@
 
-#include "..\Graph.h"
-#include "..\HexPaths.h"
-#include "..\HexBoard.h"
+#include "SimpleGraph.h"
+#include "HexBoard.h"
 
 int main(int argc, char const *argv[])
 {

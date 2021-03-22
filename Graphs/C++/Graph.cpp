@@ -1,19 +1,6 @@
 /*     
     
-    mar. 6 2021:
-        Changed to be a template. It should work properly with either integer or floating point types.
-        It changes the graph attribute from a vector<vector<int>> to a template<typename T> vector<vector<T>
-    This type basically determines the type of the edge weights. So by doing this, the class is able to represent different kinds of weights, from
-    unweighted to a high precision floating point (double).
-
-    *I have changed my mind about this paragraph below and intend to change it in the future:
-    For the graph representation as a data structure I decided to use a square matrix created by a 2d vector. 
-    Although making it a square matrix means it will take up more memory than a vector of differently sized vectors, 
-    it also is, in my opinion, easier to think about and understand,
-    so it should result in simpler and faster algorithms.
-    
-    Originally made for the week 3 Assignment for the course "C++ for C Programmers, Part A", University of California - Santa Cruz @ Coursera
-    Changes have been made to increase ways it can be used, and help in following assignments.
+    A new version of Graph, that uses a Vector of edges instead of a matrix.
 
   Lucas Romero da F M de Andrade
   Start: feb. 17 2021
@@ -35,7 +22,7 @@ using std::vector;
 using std::cout;
 
 template<typename T>
-Graph<T>::Graph():size(10), edges(0), graph(10,vector<T>(10,static_cast<T>(0))){
+SimpleGraph::Graph():size(10), edges(0), graph(10,vector<T>(10,static_cast<T>(0))){
     /**
      * Constructor that creates a completely unconnected graph of size size.
      * Also seeds the pseudo-random number generator to be used with randomizeGraph().
@@ -44,7 +31,7 @@ Graph<T>::Graph():size(10), edges(0), graph(10,vector<T>(10,static_cast<T>(0))){
 }
 
 template<typename T>
-Graph<T>::Graph(int size):size(size), edges(0), graph(size,vector<T>(size,static_cast<T>(0))){
+SimpleGraph::Graph(int size):size(size), edges(0), graph(size,vector<T>(size,static_cast<T>(0))){
     /**
      * Constructor that creates a completely unconnected graph of size size.
      * Also seeds the pseudo-random number generator to be used with randomizeGraph().
@@ -53,7 +40,7 @@ Graph<T>::Graph(int size):size(size), edges(0), graph(size,vector<T>(size,static
 }
 
 template<typename T>
-Graph<T>::Graph(const vector<vector<T>>& newGraph){
+SimpleGraph::Graph(const vector<vector<T>>& newGraph){
     /**
      * Constructor that makes the graph from an existing 2d vector.
      */
@@ -70,7 +57,7 @@ Graph<T>::Graph(const vector<vector<T>>& newGraph){
 }
 
 template<typename T>
-Graph<T>::Graph(std::string file_name): edges(0){
+SimpleGraph::Graph(std::string file_name): edges(0){
     /**
      * Constructor that makes the graph from file.
      * The file format will be an initial integer that is the node size of the graph
@@ -99,7 +86,7 @@ Graph<T>::Graph(std::string file_name): edges(0){
 }
 
 template<typename T>
-void Graph<T>::seedRandomNumberGen(){
+void SimpleGraph::seedRandomNumberGen(){
     /**
      * Method for seeding the pseudo random number generator used in randomizeGraph()
      */
@@ -108,25 +95,25 @@ void Graph<T>::seedRandomNumberGen(){
 }
 
 template<typename T>
-int Graph<T>::Vertices(){
+int SimpleGraph::Vertices(){
     // returns the number of vertices
     return size;
 }
 
 template<typename T>
-int Graph<T>::Edges(){
+int SimpleGraph::Edges(){
     // returns the number of edges
     return edges;
 }
 
 template<typename T>
-bool Graph<T>::Adjacent(int node1, int node2){
+bool SimpleGraph::Adjacent(int node1, int node2){
     // returns true if there is an edge between the nodes
     return ( graph[node1][node2] != static_cast<T>(0) );
 }
 
 template<typename T>
-vector<int> Graph<T>::Neighbors(int node){
+vector<int> SimpleGraph::Neighbors(int node){
     /**
      * returns a vector of ints indicating which nodes have edges with the specified node.
      */
@@ -142,7 +129,7 @@ vector<int> Graph<T>::Neighbors(int node){
 }
 
 template<typename T>
-void Graph<T>::addEdge(int node1, int node2, T distance){
+void SimpleGraph::addEdge(int node1, int node2, T distance){
     /**
      * adds an edge with the specified weight/distance between the specified nodes
      * only does anything if the edge really did not exist.
@@ -155,7 +142,7 @@ void Graph<T>::addEdge(int node1, int node2, T distance){
 }
 
 template<typename T>
-void Graph<T>::deleteEdge(int node1, int node2){
+void SimpleGraph::deleteEdge(int node1, int node2){
     /**
      * removes the edge between the specified nodes
      * only does anything if the edge really exists.
@@ -167,7 +154,7 @@ void Graph<T>::deleteEdge(int node1, int node2){
 }
 
 template<typename T>
-T Graph<T>::getEdgeValue(int node1, int node2){
+T SimpleGraph::getEdgeValue(int node1, int node2){
     /**
      * returns the weight of the edge between specified nodes
      */
@@ -175,7 +162,7 @@ T Graph<T>::getEdgeValue(int node1, int node2){
 }
 
 template<typename T>
-void Graph<T>::setEdgeValue(int node1, int node2, T value){
+void SimpleGraph::setEdgeValue(int node1, int node2, T value){
     /**
      * changes the weight/distance of an existing edge
      * to avoid misuse, this method checks if deleteEdge or addEdge aren't
@@ -191,7 +178,7 @@ void Graph<T>::setEdgeValue(int node1, int node2, T value){
 }
 
 template<typename T>
-void Graph<T>::randomizeGraph(){
+void SimpleGraph::randomizeGraph(){
     /**
      * This function creates randomized edges on the graph.
      * The user can specify density, as well as the minimum and maximum edge weight/distance
@@ -238,7 +225,7 @@ void Graph<T>::randomizeGraph(){
     }
 }
 template<typename T>
-void Graph<T>::randomizeGraph(const double density, const T minDistance, const T maxDistance){
+void SimpleGraph::randomizeGraph(const double density, const T minDistance, const T maxDistance){
     /**
      * This function creates randomized edges on the graph.
      * The user can specify density, as well as the minimum and maximum edge weight/distance
@@ -283,7 +270,7 @@ void Graph<T>::randomizeGraph(const double density, const T minDistance, const T
 }
 
 template<typename T>
-void Graph<T>::printGraph(){
+void SimpleGraph::printGraph(){
     /**
      * prints a table representing the graph
      */
