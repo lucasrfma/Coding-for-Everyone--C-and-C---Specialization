@@ -285,29 +285,29 @@ class MinimumSpanningTree{
 
 };
 
-int main(int argc, char *argv[]){
+// int main(int argc, char *argv[]){
     
-    int startNode = 0;
+//     int startNode = 0;
 
-    std::string file_name;
-    if( argc > 1 ){
-        file_name = argv[1];
-    }else{
-        file_name = "mst_data.txt";
-    }
+//     std::string file_name;
+//     if( argc > 1 ){
+//         file_name = argv[1];
+//     }else{
+//         file_name = "mst_data.txt";
+//     }
 
-    Graph<double> graph(file_name);
+//     Graph<double> graph(file_name);
 
-    // graph.printGraph();
-    MinimumSpanningTree<double> tree(graph);
+//     // graph.printGraph();
+//     MinimumSpanningTree<double> tree(graph);
 
-    printf("\n\nCost of the Minimum Spanning Tree: %d",tree.getCost());
+//     printf("\n\nCost of the Minimum Spanning Tree: %d",tree.getCost());
 
-    printf("\n\nMinimum Spanning Tree drawn:\n\n");
-    tree.printTree();
-    printf("\n\nMinimum Spanning Tree as a list of nodes and their branches:\n\n");
-    tree.printTreeList();
+//     printf("\n\nMinimum Spanning Tree drawn:\n\n");
+//     tree.printTree();
+//     printf("\n\nMinimum Spanning Tree as a list of nodes and their branches:\n\n");
+//     tree.printTreeList();
 
-    std::cout << std::endl;
+//     std::cout << std::endl;
 
-}
+// }

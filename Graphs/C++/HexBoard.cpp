@@ -13,14 +13,14 @@
  * Blue wins by connecting one side to the other
  * Red winds by connecting top and bottom
  * 
- * For testing purposes I'm sending this file together with the necessary Graph class and 2 test files
+ * For testing purposes I'm sending this file together with the necessary SimpleGraph class and 2 test files
  *      How to use the test files:
  *      in windows 10: call the program with "cat test.txt | HexBoard.exe"
  *      Same should work on linux I think, probably just "HexBoard.exe << test.txt" works as well if I'm not mistaken
  * You can also test by playing a game with yourself I guess
  * You can change the size of the board by changing the size on main() function.
  * 
- * PS: the Graph class I'm using is the same I have created for C++ for C programmers Part A.
+ * PS: the SimpleGraph class I'm using is the same I have created for C++ for C programmers Part A.
  * I think it is terrible for this case, since I made it by using connectivity matrices, which is a waste for this case
  * that has really low connectivity. But I guess it should'nt matter much, at least for now. Maybe for the future assignments,
  * which require more processing power for the AI part, I will change this.
@@ -29,8 +29,8 @@
  * mar. 11 2021
  * 
  */
-
-#include "Graph.cpp"
+#include "SimpleGraph.h"
+#include "HexBoard.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -38,41 +38,8 @@
 
 using std::vector;
 using std::string;
-
-class HexBoard
-{
-private:
-    int size;
-    int numberOfNodes;
-    Graph<int>  board;
-    vector<char> boardStatus;
-    vector<int> top;
-    vector<int> right;
-    vector<int> bottom;
-    vector<int> left;
-    bool blueHumanPlayer;
-    bool redHumanPlayer;
-    bool blueTurn;
-
-    int isBoardEdge(int position);
-    void printMove(int position, char value);
-    int setPositionStatus(int position, char status);
-    int makeMove(int position, char value);
-    vector<int> valueConnections(int start, char value);
-    bool isBlueVictory(int start);
-    bool isRedVictory(int start);
-    void moveAI();
-    
-public:
-    HexBoard(int size);
-    void printBoard();
-    char getPositionStatus(int position);
-    int coordinateToOrdinal(int x, int y);
-    int ordinalToCoordinate(int position, int& x, int& y);
-    bool queryMove();
-    inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
-    inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
-};
+using std::cout;
+using std::endl;
 
 HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
@@ -81,7 +48,6 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
      * int size argument is the size of a board edge.
      * So the total number of elements will be size squared.
      */
-    // (test) std::cout << "\nSize is: " << size << std::endl;
     for( int i = 0; i < numberOfNodes; ++i){
         // Populate top vector.
         if( i < size ){
@@ -100,8 +66,6 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
             left.push_back(i);
         }
     }
-    // (test) std::cout << "Vertices: " << board.Vertices() << std::endl;
-    // (test) board.printGraph();
 
     // add the edges:
     int nodeType;
@@ -111,55 +75,54 @@ HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true),
         {
         case 0: // Inner position
             
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-size+1,1);
-            board.addEdge(i,i-1,1);
-            board.addEdge(i,i+1,1);
-            board.addEdge(i,i+size-1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-size+1);
+            board.addEdge(i,i-1);
+            board.addEdge(i,i+1);
+            board.addEdge(i,i+size-1);
+            board.addEdge(i,i+size);
             break;
         case 2: // Top Edge
-            board.addEdge(i,i-1,1);
-            board.addEdge(i,i+1,1);
-            board.addEdge(i,i+size-1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i-1);
+            board.addEdge(i,i+1);
+            board.addEdge(i,i+size-1);
+            board.addEdge(i,i+size);
             break;
         case 4: // Right Edge
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-1,1);
-            board.addEdge(i,i+size-1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-1);
+            board.addEdge(i,i+size-1);
+            board.addEdge(i,i+size);
             break;
         case 6: // Top-Right Corner
-            board.addEdge(i,i-1,1);
-            board.addEdge(i,i+size-1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i-1);
+            board.addEdge(i,i+size-1);
+            board.addEdge(i,i+size);
             break;
         case 8: // Bottom Edge
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-size+1,1);
-            board.addEdge(i,i-1,1);
-            board.addEdge(i,i+1,1);
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-size+1);
+            board.addEdge(i,i-1);
+            board.addEdge(i,i+1);
             break;
-        case 12: // Bottom-Right Cornerstd::cout << "test!!" << result;
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-1,1);
+        case 12: // Bottom-Right Corner
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-1);
             break;
         case 16: // Left Edge
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-size+1,1);
-            board.addEdge(i,i+1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-size+1);
+            board.addEdge(i,i+1);
+            board.addEdge(i,i+size);
             break;
         case 18: // Top-Left Corner
-            // (test) std::cout << "Node " << i << " Type: " << nodeType;
-            board.addEdge(i,i+1,1);
-            board.addEdge(i,i+size,1);
+            board.addEdge(i,i+1);
+            board.addEdge(i,i+size);
             break;
         case 24: // Bottom-Left Corner
-            board.addEdge(i,i-size,1);
-            board.addEdge(i,i-size+1,1);
-            board.addEdge(i,i+1,1);
+            board.addEdge(i,i-size);
+            board.addEdge(i,i-size+1);
+            board.addEdge(i,i+1);
             break;
         default:
             std::cout << "\nError checking element position." << std::endl;
@@ -301,6 +264,23 @@ int HexBoard::coordinateToOrdinal(int x, int y)
     return position;
 }
 
+int HexBoard::coordinateToOrdinal(int x, int y, int size)
+{
+    /**
+     * Static version to enable other classes to use it even without direct access to a HexBoard Object.
+     * Returns the ordinal value (from 0 to numberOfNodes-1) corresponding to
+     * the coordinates passed. eg: (0,0) = 0, (n-1,n-1) = (n^2)-1
+     * Returns -1 in case the resulting position is out of bounds.
+     */
+    int position = x*size + y;
+    int numberOfNodes = size*size;
+
+    if( position < 0 || position >= numberOfNodes ){
+        return -1;
+    }
+    return position;
+}
+
 int HexBoard::ordinalToCoordinate(int position, int& x, int& y)
 {
     /**
@@ -309,6 +289,24 @@ int HexBoard::ordinalToCoordinate(int position, int& x, int& y)
      * if out of bounds, returns -1 without assigning values.
      * If valid, (x,y) are assigned to the variables passes as arguments and returns 0
      */
+    if( position < 0 || position >= numberOfNodes ){
+        return -1;
+    }
+    x = position / size;
+    y = position % size;
+    return 0;
+}
+
+int HexBoard::ordinalToCoordinate(int position, int& x, int& y, int size)
+{
+    /**
+     * Static version to enable other classes to use it even without direct access to a HexBoard Object.
+     * Converts a position to it's equivalent coordinates (x,y).
+     * Checks if position is valid or out of bounds.
+     * if out of bounds, returns -1 without assigning values.
+     * If valid, (x,y) are assigned to the variables passes as arguments and returns 0
+     */
+    int numberOfNodes = size*size;
     if( position < 0 || position >= numberOfNodes ){
         return -1;
     }
@@ -525,18 +523,4 @@ bool HexBoard::isRedVictory(int start)
 void HexBoard::moveAI()
 {
 
-}
-
-int main(int argc, char const *argv[])
-{
-    const int size = 11;
-    HexBoard board(size);
-    bool gameEnded = false;
-
-    while(!gameEnded){
-        board.printBoard();
-        gameEnded = board.queryMove();
-    }
-
-    return 0;
 }

@@ -40,7 +40,7 @@ public:
 
 int HexMoveSelector::checkForWinningMove()
 {
-    
+    return 0;
 }
 void HexMoveSelector::addBluePath(vector<int> &&path)
 {
