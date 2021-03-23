@@ -1,33 +1,216 @@
 /**
- * HexBoard class
+ * Coursera - C++ for C Programmers, Part B
+ * Implement Monte Carlo Hex Move
  * 
- * Made for an assignment for C++ for C Programmers Part B - UCSC, @ Coursera
- * 
- * This is a class implements a game of Hex.
+ * This program is set to run 110,000 simulations per move.
+ * This is because the assignment asks for +- 1000 trials per legal play
+ * and the first moves in a 11x11 board will have more than 110 legal play
+ * but the number of legal play drops every move.
+ * I though of setting a specific number of trials per possible play, instead of per move
+ * but then I decided it wouldn't make much difference, so here we are.
+ * This way is nice that we can choose the simulation number based on what is a tolerable wait time
+ * and the "precision" of the AI goes up as the game goes on. It still gets faster since each trial
+ * gets smaller as the possible moves get fewer.
  * 
  * There are 2 players: red and blue
  * Blue starts the match
  * Blue wins by connecting one side to the other
  * Red winds by connecting top and bottom
  * 
- * Lucas Romero da Frota Moraes de Andrade.
- * mar. 22 2021
+ * I originally created this with separated files, as I had done in other assignments
+ * But since everyone always uploads their assignments as a single file, maybe that's the correct way to do it
+ * so copy pasted everything into one .cpp. Hope you dont mind!
+ * 
+ * Lucas Romero da F. M. de Andrade
+ * march 23 2021
  * 
  */
-#include "SimpleGraph.h"
-#include "HexBoard.h"
+
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <chrono>
 #include <random>
 
+using std::cout;
+using std::cin;
+using std::endl;
 using std::vector;
 using std::string;
-using std::cout;
-using std::endl;
 
+/**
+ * SimpleGraph declaration
+ * Implementation is pasted beneath the main function.
+ */
+
+class SimpleGraph{
+private:
+
+    int size;
+    int edges;
+    std::vector<std::vector<int>> graph;
+
+public:
+
+    SimpleGraph(int size): size(size),edges(0),graph(size){}
+    // returns true if nodes are adjacent
+    bool Adjacent(int node1, int node2);
+    /**
+     * Adds an edge
+     * only does anything if the edge really did not exist.
+     */
+    void addEdge(int node1, int node2);
+    // returns the number of edges
+    int Edges();
+    // returns a list of adjacent nodes
+    std::vector<int> Neighbors(int node);
+    /**
+     * prints a table of connectivity representing the graph
+     */
+    void printGraph();
+};
+
+/**
+ * HexBoard declaration
+ * Implementation is pasted beneath the main function.
+ */
+class HexBoard
+{
+private:
+
+    int size;
+    int numberOfNodes;
+    int simulationNumber;
+    SimpleGraph  board;
+    std::vector<char> boardStatus;
+    std::vector<int> top;
+    std::vector<int> right;
+    std::vector<int> bottom;
+    std::vector<int> left;
+    bool blueHumanPlayer;
+    bool redHumanPlayer;
+    bool blueTurn;
+    std::default_random_engine randomizer;
+
+    int isBoardEdge(int position);
+    void printMove(int position, char value);
+    int setPositionStatus(int position, char status);
+    int makeMove(int position, char value);
+    std::vector<int> valueConnections(int start, char value);
+    bool isBlueVictory(int start);
+    bool isRedVictory(int start);
+    std::vector<int> valueConnectionsSim(int start, const std::vector<char> &simulation);
+    bool isBlueVictorySim(int start, const std::vector<char> &simulation);
+    int moveAI();
+    std::vector<double> monteCarlo();
+
+public:
+    HexBoard(int size,int sim);
+    void printBoard();
+    char getPositionStatus(int position);
+    int coordinateToOrdinal(int x, int y);
+    int ordinalToCoordinate(int position, int& x, int& y);
+    bool queryMove();
+    inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
+    inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
+};
+
+/**
+ * Main Function
+ */
+
+int main(int argc, char const *argv[])
+{
+    // default number of simulations per AI play
+    int simulationNumber = 110000;
+    int size,option;
+    cout << "\nPlease enter board size (ex: 7)\n";
+    cin >> size;
+    HexBoard board(size,simulationNumber);
+
+    cout << "\nChoose an Option: \n1 - Player (Blue) VS AI (Red)\n2 - AI (Blue) VS Player (Red)\n3 - AI VS AI\n4 - Player VS Player\n";
+    cin >> option;
+
+    switch (option)
+    {
+    case 2:
+        board.setBluePlayer(false); break;
+    case 3:
+        board.setBluePlayer(false);
+        board.setRedPlayer(false); break;
+    case 4:
+        break;
+    default:
+        board.setRedPlayer(false);
+        break;
+    }
+    
+    bool gameEnded = false;
+    // plays the game until it ends
+    while(!gameEnded){
+        board.printBoard();
+        gameEnded = board.queryMove();
+    }
+
+    return 0;
+}
+
+/**
+ * SimpleGraph Implementation
+ */
+bool SimpleGraph::Adjacent(int node1, int node2){
+    // returns true if there is an edge between the nodes
+    return ( std::find(graph[node1].begin(),graph[node1].end(),node2) != graph[node1].end() );
+}
+
+void SimpleGraph::addEdge(int node1, int node2){
+    /**
+     * adds an edge with the specified weight/distance between the specified nodes
+     * only does anything if the edge really did not exist.
+     */
+    if( !Adjacent(node1,node2) ){
+        // (test) std::cout << "\nNew edge between node " << node1 << " and node 2 " << node2 << " Distance: " << distance << std::endl; 
+        graph[node1].push_back(node2);
+        graph[node2].push_back(node1);
+        ++edges;
+    }
+}
+
+int SimpleGraph::Edges(){
+    // returns the number of edges
+    return edges;
+}
+
+vector<int> SimpleGraph::Neighbors(int node){
+    /**
+     * returns a vector of ints indicating which nodes have edges with the specified node.
+     */
+    return graph[node];
+}
+
+void SimpleGraph::printGraph(){
+    /**
+     * Prints the graph
+     */
+    
+    cout << "\nNode | Connections" << endl;
+    int i = 0;
+    for (auto &&node : graph)
+    {
+        cout << "\n" << std::setw(4) << i << " | ";
+        for (auto &&edge : node)
+        {
+            cout << edge << " ";
+        }
+        ++i;
+    }   
+}
+
+/**
+ * HexBoard Implementation
+ */
 HexBoard::HexBoard(int size,int sim): simulationNumber(sim), size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
     /**
@@ -544,7 +727,7 @@ int HexBoard::moveAI()
      * Chooses the appropriate tile to take based on the vector returned
      * Returns the position of the tile
      */
-    cout << "\nAI's turn. Processing ... \n";
+    cout << "\nProcessing ... \n";
     vector<double> &&blueWinRate = monteCarlo();
     int position = numberOfNodes;
     double comparison;

@@ -1,19 +1,23 @@
 // #pragma once
-#ifndef _HEX_BOARD
-#define _HEX_BOARD
+#pragma once
+
 #include "SimpleGraph.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 class HexPaths;
 
 class HexBoard
 {
 private:
+
     int size;
     int numberOfNodes;
+    int simulationNumber;
     SimpleGraph  board;
     std::vector<char> boardStatus;
     std::vector<int> top;
@@ -23,6 +27,7 @@ private:
     bool blueHumanPlayer;
     bool redHumanPlayer;
     bool blueTurn;
+    std::default_random_engine randomizer;
 
     int isBoardEdge(int position);
     void printMove(int position, char value);
@@ -31,19 +36,19 @@ private:
     std::vector<int> valueConnections(int start, char value);
     bool isBlueVictory(int start);
     bool isRedVictory(int start);
-    void moveAI();
+    std::vector<int> valueConnectionsSim(int start, const std::vector<char> &simulation);
+    bool isBlueVictorySim(int start, const std::vector<char> &simulation);
+    int moveAI();
+    std::vector<double> monteCarlo();
     
+
 public:
-    HexBoard(int size);
+    HexBoard(int size,int sim);
     void printBoard();
     char getPositionStatus(int position);
     int coordinateToOrdinal(int x, int y);
-    static int coordinateToOrdinal(int x, int y, int size);
     int ordinalToCoordinate(int position, int& x, int& y);
-    static int ordinalToCoordinate(int position, int& x, int& y,int size);
     bool queryMove();
     inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
     inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
 };
-
-#endif
