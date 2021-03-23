@@ -18,6 +18,7 @@ private:
     int size;
     int numberOfNodes;
     int simulationNumber;
+    int threadNumber;
     SimpleGraph  board;
     std::vector<char> boardStatus;
     std::vector<int> top;
@@ -43,7 +44,7 @@ private:
     
 
 public:
-    HexBoard(int size,int sim);
+    HexBoard(int size,int sim, int threadNumber);
     void printBoard();
     char getPositionStatus(int position);
     int coordinateToOrdinal(int x, int y);

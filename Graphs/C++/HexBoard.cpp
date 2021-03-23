@@ -28,7 +28,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-HexBoard::HexBoard(int size,int sim): simulationNumber(sim), size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
+HexBoard::HexBoard(int size,int sim, int threadNumber): simulationNumber(sim), size(size), threadNumber(threadNumber),blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
     /**
      * Constructor that initializes a HexBoard.
