@@ -544,7 +544,7 @@ int HexBoard::moveAI()
      * Chooses the appropriate tile to take based on the vector returned
      * Returns the position of the tile
      */
-    cout << "\nProcessing ... \n";
+    cout << "\nAI's turn. Processing ... \n";
     vector<double> &&blueWinRate = monteCarlo();
     int position = numberOfNodes;
     double comparison;

@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
     
     int simulationNumber = 50000;
     int size,option;
-    cout << "\nPlease enter board size (ex: 7)\n";
+    cout << "\nHex Game\n" <<"\nPlease enter board size (I recomend from 7 to 11)\n";
     cin >> size;
     // to avoid long wait times
     if(size > 7)
@@ -41,7 +41,8 @@ int main(int argc, char const *argv[])
     }
     HexBoard board(size,simulationNumber);
 
-    cout << "\nChoose an Option: \n1 - Player (Blue) VS AI (Red)\n2 - AI (Blue) VS Player (Red)\n3 - AI VS AI\n4 - Player VS Player\n";
+    cout << "\nBlue player needs to connect Left and Right sides of the board.\nRed player needs to connect Top and Bottom";
+    cout << "\nChoose an Option: \n1 - Player (Blue) VS AI (Red)\n2 - AI (Blue) VS Player (Red)\n3 - AI VS AI\n4 - Player VS Player\n\n";
     cin >> option;
 
     switch (option)
