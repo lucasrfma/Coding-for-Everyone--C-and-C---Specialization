@@ -20,13 +20,8 @@
  * You can also test by playing a game with yourself I guess
  * You can change the size of the board by changing the size on main() function.
  * 
- * PS: the SimpleGraph class I'm using is the same I have created for C++ for C programmers Part A.
- * I think it is terrible for this case, since I made it by using connectivity matrices, which is a waste for this case
- * that has really low connectivity. But I guess it should'nt matter much, at least for now. Maybe for the future assignments,
- * which require more processing power for the AI part, I will change this.
- * 
  * Lucas Romero da Frota Moraes de Andrade.
- * mar. 11 2021
+ * mar. 22 2021
  * 
  */
 #include "SimpleGraph.h"
@@ -35,19 +30,25 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
 
-HexBoard::HexBoard(int size): size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
+HexBoard::HexBoard(int size, int simulationNumber = 1000): simulationNumber(simulationNumber), size(size), blueTurn(true), blueHumanPlayer(true), redHumanPlayer(true), numberOfNodes(size*size), board(size*size), boardStatus(size*size,'.')
 {
     /**
      * Constructor that initializes a HexBoard.
      * int size argument is the size of a board edge.
      * So the total number of elements will be size squared.
      */
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    randomizer.seed(seed);
+
     for( int i = 0; i < numberOfNodes; ++i){
         // Populate top vector.
         if( i < size ){
@@ -379,7 +380,7 @@ bool HexBoard::queryMove()
             std::cin >> y;
             position = coordinateToOrdinal(x,y);
         }else{
-            moveAI();
+            position = moveAI();
         }
         if( !( fail = makeMove(position,'B') ) ){
             // changes whose turn it is
@@ -403,7 +404,7 @@ bool HexBoard::queryMove()
             std::cin >> y;
             position = coordinateToOrdinal(x,y);
         } else{
-            moveAI();
+            position = moveAI();
         }
         if( !( fail = makeMove(position,'R') ) ){
             // changes whose turn it is
@@ -520,7 +521,118 @@ bool HexBoard::isRedVictory(int start)
     return foundTop&&foundBottom;
 }
 
-void HexBoard::moveAI()
+int HexBoard::moveAI()
 {
+    /**
+     * Calls monteCarlo()
+     * Chooses the appropriate tile to take based on the vector returned
+     * Returns the position of the tile
+     */
 
+    vector<double> &&blueWinRate = monteCarlo();
+    int position;
+
+    // if blue turn, finds the biggest winRate and returns the respective starting move
+    if(blueTurn)
+    {
+        double comparison = -1.0;
+        int i = 0;
+        for (auto &&winrate : blueWinRate)
+        {
+            if( winrate > comparison )
+            {
+                position = i;
+            }
+            ++i;
+        }
+        
+    }
+    else // if not, finds the lowest win rate.
+    {
+        double comparison = 2.0;
+        int i = 0;
+        for (auto &&winrate : blueWinRate)
+        {
+            // -1.0 is the default when creating the blueWinRate vector
+            // It is not 0 so a position not considered is different from a position with blue = 0% wr
+            if( winrate < comparison && winrate != -1.0)
+            {
+                position = i;
+            }
+            ++i;
+        }
+    }
+
+    return position;
+}
+
+vector<double> HexBoard::monteCarlo()
+{
+    /**
+     * 1 - Creates a copy of boardStatus, and blueTurn
+     * 2 - Creates a vector to represent blue win %, once to represent wins, and one totals for every starting tile
+     * 3 - Creates a vector with all unclaimed tiles
+     * 4 - Simulates plays, sees if Blue won in each simulated game
+     * 5 - calculates win rate for each starting move and returns it
+     */
+
+    // 1 - Creates a copy of boardStatus, and blueTurn
+    vector<char> simulation = boardStatus;
+    bool blueTurnSim = blueTurn;
+
+    // 2 - Creates a vector to represent blue win %, once to represent wins, and one totals for every starting tile
+    vector<double> blueWinRate(numberOfNodes,-1.0);
+    vector<int> blueWins(numberOfNodes,0);
+    vector<int> totals(numberOfNodes,0);
+    // 3 - Creates a vector with all unclaimed tiles
+    vector<int> unclaimed;
+    int i = 0;
+    for (auto &&tile : simulation)
+    {
+        if(tile == '.')
+        {
+            unclaimed.push_back(i);
+        }
+        ++i;
+    }
+
+    // 4 - Simulates plays, sees if Blue won in each simulated game
+    for( int j = 0; j < simulationNumber; ++j )
+    {
+        // Shuffles unclaimed vector to simulate a game
+        std::shuffle(unclaimed.begin(),unclaimed.end(),randomizer);
+        // increment number of games starting with the first position of the unclaimed vector
+        // each position on this vector represents a play
+        ++totals[unclaimed[0]];
+        // goes trough the unclaimed vector making the plays until the simulation board is filled
+        for (auto &&position : unclaimed)
+        {
+            if(blueTurnSim)
+                simulation[position] = 'B';
+            else
+                simulation[position] = 'R';
+            blueTurnSim = !blueTurnSim;
+        }
+        // verifies if blue won
+        for (auto &&tile : left)
+        {
+            if( isBlueVictory(tile) )
+            {
+                ++blueWins[unclaimed[0]];
+                break;
+            }
+        }
+    }
+
+    // 5 calculates win rate for each starting move and returns it
+    int k = 0;
+    for (auto &&games : totals)
+    {
+        if( games > 0 )
+        {
+            blueWinRate[k] = static_cast<double>(blueWins[k])/games;
+        }
+    }
+    
+    return blueWinRate;
 }

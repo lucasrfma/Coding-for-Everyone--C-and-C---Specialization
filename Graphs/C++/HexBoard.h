@@ -6,14 +6,18 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 class HexPaths;
 
 class HexBoard
 {
 private:
+
     int size;
     int numberOfNodes;
+    int simulationNumber;
     SimpleGraph  board;
     std::vector<char> boardStatus;
     std::vector<int> top;
@@ -23,6 +27,7 @@ private:
     bool blueHumanPlayer;
     bool redHumanPlayer;
     bool blueTurn;
+    std::default_random_engine randomizer;
 
     int isBoardEdge(int position);
     void printMove(int position, char value);
@@ -31,10 +36,13 @@ private:
     std::vector<int> valueConnections(int start, char value);
     bool isBlueVictory(int start);
     bool isRedVictory(int start);
-    void moveAI();
+    int moveAI();
+    vector<double> monteCarlo();
     
+
 public:
     HexBoard(int size);
+    HexBoard(int size,int simulationNumber);
     void printBoard();
     char getPositionStatus(int position);
     int coordinateToOrdinal(int x, int y);
@@ -44,6 +52,8 @@ public:
     bool queryMove();
     inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
     inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
+
+
 };
 
 #endif
