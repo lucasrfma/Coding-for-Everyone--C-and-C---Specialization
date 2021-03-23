@@ -1,6 +1,6 @@
 // #pragma once
-#ifndef _HEX_BOARD
-#define _HEX_BOARD
+#pragma once
+
 #include "SimpleGraph.h"
 #include <iostream>
 #include <vector>
@@ -36,24 +36,19 @@ private:
     std::vector<int> valueConnections(int start, char value);
     bool isBlueVictory(int start);
     bool isRedVictory(int start);
+    std::vector<int> valueConnectionsSim(int start, const std::vector<char> &simulation);
+    bool isBlueVictorySim(int start, const std::vector<char> &simulation);
     int moveAI();
-    vector<double> monteCarlo();
+    std::vector<double> monteCarlo();
     
 
 public:
-    HexBoard(int size);
-    HexBoard(int size,int simulationNumber);
+    HexBoard(int size,int sim);
     void printBoard();
     char getPositionStatus(int position);
     int coordinateToOrdinal(int x, int y);
-    static int coordinateToOrdinal(int x, int y, int size);
     int ordinalToCoordinate(int position, int& x, int& y);
-    static int ordinalToCoordinate(int position, int& x, int& y,int size);
     bool queryMove();
     inline void setBluePlayer(bool trueIfHuman){blueHumanPlayer = trueIfHuman;}
     inline void setRedPlayer(bool trueIfHuman){redHumanPlayer = trueIfHuman;}
-
-
 };
-
-#endif
