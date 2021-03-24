@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <thread>
 
 class HexPaths;
 
@@ -40,7 +41,7 @@ private:
     std::vector<int> valueConnectionsSim(int start, const std::vector<char> &simulation);
     bool isBlueVictorySim(int start, const std::vector<char> &simulation);
     int moveAI();
-    std::vector<double> monteCarlo();
+    void monteCarlo(std::vector<std::vector<int>>& blueWins_Games);
     
 
 public:

@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <thread>
 
 using std::vector;
 using std::string;
@@ -544,8 +545,77 @@ int HexBoard::moveAI()
      * Chooses the appropriate tile to take based on the vector returned
      * Returns the position of the tile
      */
+
+    // create threads
+    // std::thread worker[threadNumber];
+
     cout << "\nAI's turn. Processing ... \n";
-    vector<double> &&blueWinRate = monteCarlo();
+
+    // this will be a vector of NumberOfThreads vectors. Each of these will be of NumberOfNodes elements
+    // each element with 2 values: blue wins and total games. This is referring to moves starting with that
+    // specific node being claimed
+    
+    // vector<vector<vector<int>>> blueWins_Games(threadNumber,vector<vector<int>>(numberOfNodes,vector<int>(2,0)));
+    // initialize threads
+    // vector<std::thread> workers;
+    // for(int i = 0; i < threadNumber; ++i)
+    // {
+    //     workers.push_back(std::thread(monteCarlo,blueWins_Games[i]));
+    // }
+    // // join threads
+    // for(int i = 0; i < threadNumber; ++i)
+    // {
+    //     workers[i].join();
+    // }
+    // initialize a vector to be the sum of the vectors for each thread.
+    // vector<int[2]> totals(numberOfNodes,{0,0});
+    // for(int node = 0; node < numberOfNodes; ++node)
+    // {
+    //     for(int thread = 0; thread < threadNumber; ++thread)
+    //     {
+    //         totals[node][0] += blueWins_Games[thread][node][0];
+    //         totals[node][1] += blueWins_Games[thread][node][1];
+    //     }
+    // }
+
+    vector<vector<int>> blueWins_Games_t1(numberOfNodes,vector<int>(2,0));
+    vector<vector<int>> blueWins_Games_t2(numberOfNodes,vector<int>(2,0));
+    vector<vector<int>> blueWins_Games_t3(numberOfNodes,vector<int>(2,0));
+    vector<vector<int>> blueWins_Games_t4(numberOfNodes,vector<int>(2,0));
+
+    std::thread worker_t1(monteCarlo,blueWins_Games_t1);
+    std::thread worker_t2(monteCarlo,blueWins_Games_t2);
+    std::thread worker_t3(monteCarlo,blueWins_Games_t3);
+    std::thread worker_t4(monteCarlo,blueWins_Games_t4);
+
+    worker_t1.join();
+    worker_t2.join();
+    worker_t3.join();
+    worker_t4.join();
+
+    vector<int[2]> totals(numberOfNodes,{0,0});
+    for(int node = 0; node < numberOfNodes; ++node)
+    {
+        totals[node][0] += blueWins_Games_t1[node][0];
+        totals[node][0] += blueWins_Games_t2[node][0];
+        totals[node][0] += blueWins_Games_t3[node][0];
+        totals[node][0] += blueWins_Games_t4[node][0];
+        totals[node][1] += blueWins_Games_t1[node][1];
+        totals[node][1] += blueWins_Games_t2[node][1];
+        totals[node][1] += blueWins_Games_t3[node][1];
+        totals[node][1] += blueWins_Games_t4[node][1];
+    }
+
+    // Calculates win rates
+    vector<double> blueWinRate(numberOfNodes,-1.0);
+    for( int i = 0; i < numberOfNodes; ++i)
+    {
+        if( totals[i][1] > 0 )
+        {
+            blueWinRate[i] = static_cast<double>(totals[i][0])/totals[i][1];
+        }
+    }
+
     int position = numberOfNodes;
     double comparison;
     // if blue turn, finds the biggest winRate and returns the respective starting move
@@ -583,7 +653,7 @@ int HexBoard::moveAI()
     return position;
 }
 
-vector<double> HexBoard::monteCarlo()
+void HexBoard::monteCarlo(vector<vector<int>>& blueWins_Games)
 {
     /**
      * 1 - Creates a copy of boardStatus, and blueTurn
@@ -597,15 +667,6 @@ vector<double> HexBoard::monteCarlo()
     vector<char> simulation = boardStatus;
     bool blueTurnSim = blueTurn;
 
-    // for (auto tile : boardStatus)
-    // {
-    //     cout<<tile;
-    // }    
-
-    // 2 - Creates a vector to represent blue win %, once to represent wins, and one totals for every starting tile
-    vector<double> blueWinRate(numberOfNodes,-1.0);
-    vector<int> blueWins(numberOfNodes,0);
-    vector<int> totals(numberOfNodes,0);
     // 3 - Creates a vector with all unclaimed tiles
     vector<int> unclaimed;
     int i = 0;
@@ -625,7 +686,8 @@ vector<double> HexBoard::monteCarlo()
         std::shuffle(unclaimed.begin(),unclaimed.end(),randomizer);
         // increment number of games starting with the first position of the unclaimed vector
         // each position on this vector represents a play
-        ++totals[unclaimed[0]];
+        ++blueWins_Games[unclaimed[0]][1];
+        // ++totals[unclaimed[0]];
         // goes trough the unclaimed vector making the plays until the simulation board is filled
         for (auto position : unclaimed)
         {
@@ -640,21 +702,9 @@ vector<double> HexBoard::monteCarlo()
         {
             if( isBlueVictorySim(tile,simulation) )
             {
-                ++blueWins[unclaimed[0]];
+                ++blueWins_Games[unclaimed[0]][0];
                 break;
             }
         }
     }
-
-    // 5 calculates win rate for each starting move and returns it
-    int k = 0;
-    for (auto games : totals)
-    {
-        if( games > 0 )
-        {
-            blueWinRate[k] = static_cast<double>(blueWins[k])/games;
-        }
-        ++k;
-    }
-    return blueWinRate;
 }
