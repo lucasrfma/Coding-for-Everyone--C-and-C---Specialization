@@ -30,15 +30,10 @@ using std::endl;
 int main(int argc, char const *argv[])
 {
     
-    int simulationNumber = 50000;
+    int simulationNumber = 300000;
     int size,option;
     cout << "\nHex Game\n" <<"\nPlease enter board size (I recomend from 7 to 11)\n";
     cin >> size;
-    // to avoid long wait times
-    if(size > 7)
-    {
-        simulationNumber = 25000;
-    }
     HexBoard board(size,simulationNumber);
 
     cout << "\nBlue player needs to connect Left and Right sides of the board.\nRed player needs to connect Top and Bottom";
@@ -64,6 +59,8 @@ int main(int argc, char const *argv[])
         board.printBoard();
         gameEnded = board.queryMove();
     }
-
+    cout << "Press any button to exit.";
+    cin.get();
+    cin.get();
     return 0;
 }
